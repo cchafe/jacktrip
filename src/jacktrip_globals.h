@@ -44,7 +44,7 @@
 /// \todo Add this namespace
 //namespace JackTrip
 
-const char* const gVersion = "1.2.1"; ///< JackTrip version
+const char* const gVersion = "(fork of 1.2.1 main) branch = main-faust-hubpatch"; ///< JackTrip version
 
 //*******************************************************************************
 /// \name Default Values

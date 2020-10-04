@@ -322,6 +322,8 @@ void Settings::parseInput(int argc, char** argv)
                 mHubConnectionMode = JackTrip::RESERVEDMATRIX; }
             else if ( atoi(optarg) == 4 ) {
                 mHubConnectionMode = JackTrip::FULLMIX; }
+            else if ( atoi(optarg) == 5 ) {
+                mHubConnectionMode = JackTrip::PANSTEREO; }
             else {
                 std::cerr << "-p ERROR: Wrong HubConnectionMode: "
                           << atoi(optarg) << " is not supported." << endl;

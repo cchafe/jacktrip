@@ -485,6 +485,8 @@ void UdpHubListener::connectPatch(bool spawn)
     // these are the other cases:
     if (getHubPatch() == JackTrip::RESERVEDMATRIX) // special patch for TU Berlin ensemble
         tmp.connectTUB(gDefaultNumInChannels);
+    else if (getHubPatch() == JackTrip::PANSTEREO) // special patch for TU Berlin ensemble
+        tmp.connectPAN(gDefaultNumInChannels);
     else if ((getHubPatch() == JackTrip::CLIENTECHO) || // client loopback for testing
              (getHubPatch() == JackTrip::CLIENTFOFI) || // all clients to all clients except self
              (getHubPatch() == JackTrip::FULLMIX)) // all clients to all clients including self
