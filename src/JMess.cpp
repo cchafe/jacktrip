@@ -202,7 +202,7 @@ void JMess::connectSpawnedPorts(int nChans, int hubPatch)
             //                        qDebug() << ports[out_i] << systemPort << s;
         }
     }
-//    for (int i = 0; i<ctr; i++) qDebug() << IPS[i];
+    //    for (int i = 0; i<ctr; i++) qDebug() << IPS[i];
     disconnectAll();
 
     int k = 0;
@@ -217,8 +217,8 @@ void JMess::connectSpawnedPorts(int nChans, int hubPatch)
             if ((hubPatch == JackTrip::CLIENTECHO)||(hubPatch == JackTrip::FULLMIX)) k = i;
             else if (hubPatch == JackTrip::CLIENTFOFI) k = (j+(i+1))%ctr;
             for (int l = 1; l<=nChans; l++) { // chans are 1-based
-//                qDebug() << "connect " << IPS[i]+":receive_"+QString::number(l)
-//                         <<"with " << IPS[k]+":send_"+QString::number(l);
+                //                qDebug() << "connect " << IPS[i]+":receive_"+QString::number(l)
+                //                         <<"with " << IPS[k]+":send_"+QString::number(l);
 
                 QString left = IPS[i] +
                         ":receive_" + QString::number(l);
@@ -244,8 +244,8 @@ void JMess::connectSpawnedPorts(int nChans, int hubPatch)
             for (int j = 0; j<jLimit; j++) {
                 k = (j+(i+1))%ctr;
                 for (int l = 1; l<=nChans; l++) { // chans are 1-based
-//                    qDebug() << "connect " << IPS[i]+":receive_"+QString::number(l)
-//                             <<"with " << IPS[k]+":send_"+QString::number(l);
+                    //                    qDebug() << "connect " << IPS[i]+":receive_"+QString::number(l)
+                    //                             <<"with " << IPS[k]+":send_"+QString::number(l);
 
                     QString left = IPS[i] +
                             ":receive_" + QString::number(l);
@@ -378,12 +378,94 @@ void JMess::connectTUB(int /*nChans*/)
 void JMess::connectPAN(int /*nChans*/)
 // called from UdpHubListener::connectPatch
 {
-    for (int i = 0; i<=gMAX_TUB-gMIN_TUB; i++) // last IP decimal octet
+    int hubPatch = JackTrip::PANSTEREO;
+    int nPanInChans = 9;
+    { // variant of FOFI
+        QMutexLocker locker(&sJMessMutex);
+
+        QString IPS[gMAX_WAIRS];
+        int ctr = 0;
+
+        const char **ports, **connections; //vector of ports and connections
+        QVector<QString> OutputInput(2); //helper variable
+
+        //Get active output ports.
+        ports = jack_get_ports (mClient, NULL, NULL, JackPortIsOutput);
+
+        for (unsigned int out_i = 0; ports[out_i]; ++out_i) {
+            //        qDebug() << QString(ports[out_i]);
+            bool systemPort =
+                    QString(ports[out_i]).contains(QString("system")) ||
+                    QString(ports[out_i]).contains(QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO));
+
+            QString str = QString(ports[out_i]);
+            //  for example              "171.64.197.121:receive_1"
+            QString s = str.section(':', 0, 0);
+            //        qDebug() << s << systemPort;
+            //  for example              "171.64.197.121"
+
+            bool newOne = !systemPort;
+            for (int i = 0; i<ctr; i++) if (newOne && (IPS[i]==s)) newOne = false;
+            if (newOne)
+            {
+                IPS[ctr] = s;
+                ctr++;
+                //                        qDebug() << ports[out_i] << systemPort << s;
+            }
+        }
+        //    for (int i = 0; i<ctr; i++) qDebug() << IPS[i];
+        disconnectAll();
+//ctr = 1;
+        int zones = nPanInChans;
+        if (ctr) zones /= ctr;
+        int halfZone = zones / 2;
+        if (!halfZone) halfZone++;
+        qDebug() << "ctr " << ctr << "halfZone " << halfZone;
+        for (int i = 0; i<ctr; i++) {
+
+            for (int ch = 1; ch<=1; ch++) { // chans are 1-based
+                QString left = IPS[i] +
+                        ":receive_" + QString::number(ch);
+                QString right = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO) +
+                        HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN + QString::number(
+                            ( halfZone + (i*zones) % nPanInChans ) );
+                qDebug() << "connect " << left <<"with " << right;
+                if (0 !=
+                        jack_connect(mClient, left.toStdString().c_str(), right.toStdString().c_str())) {
+                    qDebug() << "WARNING FROM JACK: port: " << left
+                             << "and port: " << right
+                             << " could not be connected.";
+                }
+            }
+
+            for (int ch = 1; ch<=2; ch++) { // chans are 1-based
+                QString left = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO) +
+                        HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT + QString::number(ch-1);
+
+                QString right = IPS[i] +
+                        ":send_" + QString::number(ch);
+
+                qDebug() << "connect " << left <<"with " << right;
+                if (0 !=
+                        jack_connect(mClient, left.toStdString().c_str(), right.toStdString().c_str())) {
+                    qDebug() << "WARNING FROM JACK: port: " << left
+                             << "and port: " << right
+                             << " could not be connected.";
+                }
+            }
+
+
+        }
+
+        free(ports);
+    }
+
+    for (int i = 0; i<0; i++) // last IP decimal octet
         for (int l = 1; l<=1; l++) // mono for now // chans are 1-based, 1...2
         {
             // jacktrip to SC
             QString client = gDOMAIN_TRIPLE + QString(".") + QString::number(gMIN_TUB+i);
-            QString serverAudio = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER);
+            QString serverAudio = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO);
             int tmp = i + l; // only works for mono... completely wrong for 2 or more chans
             qDebug() << "connect " << client << ":receive_ " << l
                      <<"with " << serverAudio << HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN << tmp;
