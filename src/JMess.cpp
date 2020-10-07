@@ -397,7 +397,8 @@ void JMess::connectPAN(int /*nChans*/)
             //        qDebug() << QString(ports[out_i]);
             bool systemPort =
                     QString(ports[out_i]).contains(QString("system")) ||
-                    QString(ports[out_i]).contains(QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO));
+                    QString(ports[out_i]).contains(QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO)) ||
+                    QString(ports[out_i]).contains(QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND))                    ;
 
             QString str = QString(ports[out_i]);
             //  for example              "171.64.197.121:receive_1"
@@ -457,7 +458,7 @@ void JMess::connectPAN(int /*nChans*/)
 
             for (int ch = 1; ch<=1; ch++) { // chans are 1-based
                 QString left = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND) +
-                        HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT + QString::number(ch-1);
+                        HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT + QString::number(ch);
 
                 QString right = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO) +
                         HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN + QString::number(
