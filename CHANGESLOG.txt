@@ -2,7 +2,7 @@
 ---
 1.2.1 (main) (this is a fork of 1.2.1)
 branch = main-faust-hubpatch
-- (added) new jack patching mode (-p)
+- (added) new jack patching mode (-p5) panning
 
 
 ---

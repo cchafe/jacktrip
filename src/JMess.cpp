@@ -370,6 +370,7 @@ void JMess::connectTUB(int /*nChans*/)
 // distribution across the slots is a function of how many clients
 
 #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO "panpot9toStereo"
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND "ecasound"
 // same as above #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN ":in_"
 // same as above #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT ":out_"
 
@@ -428,7 +429,7 @@ void JMess::connectPAN(int /*nChans*/)
                         ":receive_" + QString::number(ch);
                 QString right = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO) +
                         HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN + QString::number(
-                            ( halfZone + (i*zones) % nPanInChans ) );
+                            ( (halfZone + (i*zones)) % nPanInChans ) );
                 qDebug() << "connect " << left <<"with " << right;
                 if (0 !=
                         jack_connect(mClient, left.toStdString().c_str(), right.toStdString().c_str())) {
@@ -454,6 +455,22 @@ void JMess::connectPAN(int /*nChans*/)
                 }
             }
 
+            for (int ch = 1; ch<=1; ch++) { // chans are 1-based
+                QString left = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND) +
+                        HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT + QString::number(ch-1);
+
+                QString right = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO) +
+                        HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN + QString::number(
+                            ( 0 % nPanInChans ) );
+
+                qDebug() << "connect " << left <<"with " << right;
+                if (0 !=
+                        jack_connect(mClient, left.toStdString().c_str(), right.toStdString().c_str())) {
+                    qDebug() << "WARNING FROM JACK: port: " << left
+                             << "and port: " << right
+                             << " could not be connected.";
+                }
+            }
 
         }
 
