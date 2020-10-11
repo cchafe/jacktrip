@@ -451,7 +451,7 @@ void JMess::connectPAN(int /*nChans*/)
 
                 QString right = QString(HARDWIRED_AUDIO_PROCESS_ON_SERVER_FREEVERBSTEREO) +
                         HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN + QString::number(
-                            ( 0 % nPanInChans ) );
+                            ( (ch-1) % nPanInChans ) );
 
                 qDebug() << "connect " << left <<"with " << right;
                 if (0 !=
