@@ -125,7 +125,7 @@ with{
 		spread between 0 and 1 with 1 for maximum spread.]",0.5,0,1,0.01)*46*ma.SR/origSR
 		: int);
 	g = parameters(vslider("[1] Wet [tooltip: The amount of reverb applied to the signal
-		between 0 and 1 with 1 for the maximum amount of reverb.]", 0.3333, 0, 1, 0.025));
+		between 0 and 1 with 1 for the maximum amount of reverb.]", 0.12, 0, 1, 0.025));
 };
 
 process = freeverb_demo;
