@@ -19,15 +19,18 @@ QT += network
 # DEFINES += WAIR
 DEFINES += WAIRTOHUB
 
+# for plugins
+INCLUDEPATH += ../faust-src-internalDSP
+
+# for stk classes used in plugins
+INCLUDEPATH += ../faust-src-internalDSP/stk
+
 # http://wiki.qtcentre.org/index.php?title=Undocumented_qmake#Custom_tools
 #cc DEFINES += __RT_AUDIO__
 # Configuration without Jack
 nojack {
   DEFINES += __NO_JACK__
 }
-
-# for plugins
-INCLUDEPATH += ../faust-src-lair/stk
 
 !win32 {
   INCLUDEPATH+=/usr/local/include
@@ -113,9 +116,6 @@ QMAKE_CLEAN += -r ./jacktrip ./jacktrip_debug ./release ./debug
 target.path = /usr/bin
 INSTALLS += target
 
-# for plugins
-INCLUDEPATH += ../faust-src-lair
-
 # Input
 HEADERS += DataProtocol.h \
            JMess.h \
@@ -136,6 +136,15 @@ HEADERS += DataProtocol.h \
            ThreadPoolTest.h \
            UdpDataProtocol.h \
            UdpHubListener.h \
+           ../faust-src-internalDSP/Faust.h \
+           ../faust-src-internalDSP/gainStereo.dsp.h \
+           ../faust-src-internalDSP/ap8x2.dsp.h \
+           ../faust-src-internalDSP/dcblock2gain.dsp.h \
+           ../faust-src-internalDSP/Stk16.dsp.h \
+           ../faust-src-internalDSP/stk/Delay.h \
+           ../faust-src-internalDSP/stk/Filter.h \
+           ../faust-src-internalDSP/stk/Stk.h \
+           ../faust-src-internalDSP/stk/OnePole.h \
            AudioInterface.h
 
 !nojack {
@@ -156,6 +165,10 @@ SOURCES += DataProtocol.cpp \
            Settings.cpp \
            UdpDataProtocol.cpp \
            UdpHubListener.cpp \
+           ../faust-src-internalDSP/Faust.cpp \
+           ../faust-src-internalDSP/stk/Delay.cpp \
+           ../faust-src-internalDSP/stk/Stk.cpp \
+           ../faust-src-internalDSP/stk/OnePole.cpp \
            AudioInterface.cpp
 
 !nojack {

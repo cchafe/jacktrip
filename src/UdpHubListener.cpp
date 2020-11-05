@@ -456,7 +456,7 @@ void UdpHubListener::connectMesh(bool spawn)
 {
     cout << ((spawn)?"spawning":"releasing") << " jacktripWorker so change mesh" << endl;
     JMess tmp;
-    tmp.connectSpawnedPorts(gDefaultNumInChannels); // change gDefaultNumInChannels if more than stereo LAIR interconnects
+    tmp.connectSpawnedPorts(gDefaultNumInChannels, 0); // change gDefaultNumInChannels if more than stereo LAIR interconnects
     //  tmp.disconnectAll();
     //  enumerateRunningThreadIDs();
 }
@@ -485,8 +485,10 @@ void UdpHubListener::connectPatch(bool spawn)
     // these are the other cases:
     if (getHubPatch() == JackTrip::RESERVEDMATRIX) // special patch for TU Berlin ensemble
         tmp.connectTUB(gDefaultNumInChannels);
-    else if (getHubPatch() == JackTrip::PANSTEREO) // special patch for TU Berlin ensemble
+    else if (getHubPatch() == JackTrip::PANSTEREO) // FULLMIX server-based panning & reverb
         tmp.connectPAN(gDefaultNumInChannels);
+    else if (getHubPatch() == JackTrip::PANFOFI) // CLIENTFOFI server-based panning & reverb
+        tmp.connectPANFOFI(gDefaultNumInChannels);
     else if ((getHubPatch() == JackTrip::CLIENTECHO) || // client loopback for testing
              (getHubPatch() == JackTrip::CLIENTFOFI) || // all clients to all clients except self
              (getHubPatch() == JackTrip::FULLMIX)) // all clients to all clients including self

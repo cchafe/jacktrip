@@ -75,6 +75,7 @@ public:
   void connectSpawnedPorts(int nChans, int hubPatch);
   void connectTUB(int nChans);
   void connectPAN(int nChans);
+  void connectPANFOFI(int nChans);
 
 private:
   int parseXML(QString xmlInFile);

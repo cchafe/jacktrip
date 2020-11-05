@@ -39,6 +39,7 @@
 #include "LoopBack.h"
 #include "NetKS.h"
 
+#include "gainStereo.dsp.h"
 #ifdef WAIR // wair
 #include "ap8x2.dsp.h"
 #include "Stk16.dsp.h"
@@ -414,7 +415,7 @@ void Settings::printUsage()
     cout << " -P, --peerport        #                  Set only the peer port number (default: " << gDefaultPort << ")" << endl;
     cout << " -U, --udpbaseport                        Set only the server udp base port number (default: 61002)" << endl;
     cout << " -b, --bitres      # (8, 16, 24, 32)      Audio Bit Rate Resolutions (default: 16)" << endl;
-    cout << " -p, --hubpatch    # (0, 1, 2, 3, 4)      Hub auto audio patch, only has effect if running HUB SERVER mode, 0=server-to-clients, 1=client loopback, 2=clients can hear all clients except themselves, 3=reserved for TUB, 4=full mix (default: 0), i.e. clients auto-connect and hear all clients including themselves" << endl;
+    cout << " -p, --hubpatch    # (0, 1, 2, 3, 4, 5, 6)      Hub auto audio patch, only has effect if running HUB SERVER mode, 0=server-to-clients, 1=client loopback, 2=clients can hear all clients except themselves, 3=reserved for TUB, 4=full mix , i.e. clients auto-connect and hear all clients including themselves, 5=(4) + pan each separately + reverb, 6=(2) + pan each separately +reverb (default: 0)" << endl;
     cout << " -z, --zerounderrun                       Set buffer to zeros when underrun occurs (default: wavetable)" << endl;
     cout << " -l, --loopback                           Run in Loop-Back Mode" << endl;
     cout << " -j, --jamlink                            Run in JamLink Mode (Connect to a JamLink Box)" << endl;
@@ -595,7 +596,7 @@ void Settings::startJackTrip()
             //netks->play();
             // -------------------------------------------------------------
         }
-
+        mJackTrip->appendProcessPlugin(new gainStereo(mNumChans)); // plugin slot 0
 #ifdef WAIR // WAIR
         if ( mWAIR ) {
             cout << "Running in WAIR Mode..." << endl;
