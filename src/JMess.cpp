@@ -423,8 +423,9 @@ void JMess::connectPAN(int /*nChans*/)
         disconnectAll();
 //ctr = 1;
         int zones = nPanInChans;
-        if (ctr>nPanInChans) ctr = nPanInChans;
-        if (ctr) zones /= ctr;
+        int ctrTop = ctr;
+        if (ctrTop>nPanInChans) ctrTop = nPanInChans;
+        if (ctrTop) zones /= ctrTop;
         int halfZone = zones / 2;
         if (!halfZone) halfZone++;
         qDebug() << "ctr " << ctr << "halfZone " << halfZone;
