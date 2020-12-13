@@ -172,6 +172,16 @@ void UdpHubListener::run()
                 cout << "JackTrip HUB SERVER: Exiting " << endl;
                 break;
             }
+            if ( peer_udp_port < 3464 ) {
+                cout << "JackTrip HUB SERVER: Client UDP Port is = " << peer_udp_port << endl;
+                cout << "JackTrip HUB SERVER: Exiting " << endl;
+                break;
+            }
+            if ( peer_udp_port > 5464 ) {
+                cout << "JackTrip HUB SERVER: Client UDP Port is = " << peer_udp_port << endl;
+                cout << "JackTrip HUB SERVER: Exiting " << endl;
+                break;
+            }
             cout << "JackTrip HUB SERVER: Client UDP Port is = " << peer_udp_port << endl;
 
             // Check is client is new or not
