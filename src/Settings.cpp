@@ -596,7 +596,7 @@ void Settings::startJackTrip()
             //netks->play();
             // -------------------------------------------------------------
         }
-        mJackTrip->appendProcessPlugin(new gainStereo(mNumChans)); // plugin slot 0
+//        mJackTrip->appendProcessPlugin(new gainStereo(mNumChans)); // plugin slot 0
 #ifdef WAIR // WAIR
         if ( mWAIR ) {
             cout << "Running in WAIR Mode..." << endl;

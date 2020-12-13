@@ -229,8 +229,8 @@ public:
         mReceiverPeerPort = port;
     }
     /// \brief Set Client Name to something different that the default (JackTrip)
-    virtual void setClientName(const char* ClientName)
-    { mJackClientName = ClientName; }
+    virtual void setClientName(QString clientName)
+    { mJackClientName = clientName; }
     /// \brief Set the number of audio channels
     virtual void setNumChannels(int num_chans)
     { mNumChans = num_chans; }
@@ -503,7 +503,7 @@ private:
     int mTcpServerPort;
 
     unsigned int mRedundancy; ///< Redundancy factor in network data
-    const char* mJackClientName; ///< JackAudio Client Name
+    QString mJackClientName; ///< JackAudio Client Name
 
     JackTrip::connectionModeT mConnectionMode; ///< Connection Mode
     JackTrip::hubConnectionModeT mHubConnectionModeT; ///< Hub Server Jack Audio Patch Connection Mode
