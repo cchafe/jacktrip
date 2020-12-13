@@ -317,7 +317,7 @@ int UdpHubListener::readClientUdpPort(QTcpSocket* clientConnection)
     if (gVerboseFlag) cout << "Ready To Read From Client!" << endl;
     // Read UDP Port Number from Server
     // --------------------------------
-    int udp_port;
+    int udp_port = 0;
     int size = sizeof(udp_port);
     char port_buf[size];
     clientConnection->read(port_buf, size);
