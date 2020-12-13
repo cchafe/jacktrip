@@ -167,7 +167,11 @@ void UdpHubListener::run()
             // Get UDP port from client
             // ------------------------
             peer_udp_port = readClientUdpPort(clientConnection);
-            if ( peer_udp_port == 0 ) { break; }
+            if ( peer_udp_port == 0 ) {
+                cout << "JackTrip HUB SERVER: Client UDP Port is = " << peer_udp_port << endl;
+                cout << "JackTrip HUB SERVER: Exiting " << endl;
+                break;
+            }
             cout << "JackTrip HUB SERVER: Client UDP Port is = " << peer_udp_port << endl;
 
             // Check is client is new or not
