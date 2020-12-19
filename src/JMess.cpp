@@ -34,6 +34,12 @@
 #include "JackTrip.h"
 #include "jacktrip_globals.h"
 #include <QDebug>
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER "SuperCollider"
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN ":in_"
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT ":out_"
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO "panpot9toStereo"
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_FREEVERBSTEREO "freeverbStereo"
+#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND "ecasound"
 
 // sJackMutex definition
 QMutex JMess::sJMessMutex;
@@ -170,6 +176,15 @@ void JMess::setConnectedPorts()
 //*******************************************************************************
 void JMess::connectSpawnedPorts(int nChans, int hubPatch)
 // called from UdpHubListener::connectMesh
+// this gets run on the ensemble's hub server with
+// CLIENTECHO
+// ./jacktrip -S -p1
+// CLIENTFOFI
+// ./jacktrip -S -p2
+// FULLMIX
+// ./jacktrip -S -p4
+
+// FULLMIX might include ecasound for example in server with looping clap track
 {
 
     QMutexLocker locker(&sJMessMutex);
@@ -251,6 +266,9 @@ void JMess::connectSpawnedPorts(int nChans, int hubPatch)
                             ":receive_" + QString::number(l);
                     QString right = IPS[k] +
                             ":send_" + QString::number(l);
+                    if (IPS[i] == HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND)
+                        left = IPS[i] +
+                                ":out_" + QString::number(l);
 
                     if (0 !=
                             jack_connect(mClient, left.toStdString().c_str(), right.toStdString().c_str())) {
@@ -299,9 +317,6 @@ void JMess::connectSpawnedPorts(int nChans, int hubPatch)
 // const int gMAX_TUB = 20; // highest client address
 // and give the proper audio process and connection names
 
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER "SuperCollider"
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN ":in_"
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT ":out_"
 // On server side it is SC jack-clients with indivisual names:
 // POE_0...POE_16
 // and each has (at this moment) one port in/out:
@@ -371,12 +386,6 @@ void JMess::connectTUB(int /*nChans*/)
 // distribution across the slots is a function of how many clients
 // stereo field pipes through a stereo (input) version of freeverb
 
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO "panpot9toStereo"
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_FREEVERBSTEREO "freeverbStereo"
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND "ecasound"
-// same as above #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN ":in_"
-// same as above #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT ":out_"
-
 // this is brute force, does not look at individual clients, just patches the whole ensemble
 // each time
 void JMess::connectPAN(int /*nChans*/)
@@ -421,11 +430,10 @@ void JMess::connectPAN(int /*nChans*/)
         }
         //    for (int i = 0; i<ctr; i++) qDebug() << IPS[i];
         disconnectAll();
-//ctr = 1;
+        //ctr = 1;
         int zones = nPanInChans;
-        int ctrTop = ctr;
-        if (ctrTop>nPanInChans) ctrTop = nPanInChans;
-        if (ctrTop) zones /= ctrTop;
+        if (ctr>nPanInChans) ctr = nPanInChans;
+        if (ctr) zones /= ctr;
         int halfZone = zones / 2;
         if (!halfZone) halfZone++;
         qDebug() << "ctr " << ctr << "halfZone " << halfZone;
@@ -551,6 +559,7 @@ void JMess::connectPAN(int /*nChans*/)
 
 
 //*******************************************************************************
+// this is a good idea but not fully implemented -- Dec 2020
 // connectPANFOFI is called when in hubpatch mode = PANFOFI
 // panning and reverb effectively acting like FOFI above
 // each client hears a unique pan and reverb with only the others, not themself
@@ -564,12 +573,6 @@ void JMess::connectPAN(int /*nChans*/)
 // panning input has 9 slots in the stereo field
 // distribution across the slots is a function of how many clients
 // stereo field pipes through a stereo (input) version of freeverb
-
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_PANSTEREO "panpot9toStereo"
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_FREEVERBSTEREO "freeverbStereo"
-#define HARDWIRED_AUDIO_PROCESS_ON_SERVER_ECASOUND "ecasound"
-// same as above #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_IN ":in_"
-// same as above #define HARDWIRED_AUDIO_PROCESS_ON_SERVER_OUT ":out_"
 
 // this is brute force, does not look at individual clients, just patches the whole ensemble
 // each time
@@ -615,7 +618,7 @@ void JMess::connectPANFOFI(int /*nChans*/)
         }
         //    for (int i = 0; i<ctr; i++) qDebug() << IPS[i];
         disconnectAll();
-//ctr = 1;
+        //ctr = 1;
         int zones = nPanInChans;
         if (ctr) zones /= ctr;
         int halfZone = zones / 2;
